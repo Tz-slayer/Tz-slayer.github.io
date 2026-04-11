@@ -4,7 +4,6 @@ import {
 	DEFAULT_THEME,
 	LIGHT_MODE,
 } from "@constants/constants.ts";
-import { expressiveCodeConfig } from "@/config";
 import type { LIGHT_DARK_MODE } from "@/types/config";
 
 export function getDefaultHue(): number {
@@ -28,27 +27,28 @@ export function setHue(hue: number): void {
 }
 
 export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
+	let mermaidTheme = "light";
 	switch (theme) {
 		case LIGHT_MODE:
 			document.documentElement.classList.remove("dark");
+			mermaidTheme = "light";
 			break;
 		case DARK_MODE:
 			document.documentElement.classList.add("dark");
+			mermaidTheme = "dark";
 			break;
 		case AUTO_MODE:
 			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
 				document.documentElement.classList.add("dark");
+				mermaidTheme = "dark";
 			} else {
 				document.documentElement.classList.remove("dark");
+				mermaidTheme = "light";
 			}
 			break;
 	}
 
-	// Set the theme for Expressive Code
-	document.documentElement.setAttribute(
-		"data-theme",
-		expressiveCodeConfig.theme,
-	);
+	document.documentElement.setAttribute("data-theme", mermaidTheme);
 }
 
 export function setTheme(theme: LIGHT_DARK_MODE): void {

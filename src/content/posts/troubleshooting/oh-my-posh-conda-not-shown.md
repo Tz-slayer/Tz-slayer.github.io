@@ -1,0 +1,107 @@
+---
+title: oh-my-posh 下 conda 环境不显示
+published: 2025-08-24 21:19:48
+lastModified: 2025-08-26
+description: 解决 Windows 环境下使用 Powershell7 和 oh-my-posh 出现 conda 环境不显示问题
+tags: [oh-my-posh]
+category: 疑难杂症
+draft: false
+---
+
+# oh-my-posh 下 conda 环境不显示
+
+## 1. 前言
+
+使用 oh-my-posh 激活 conda 环境后，无法像 cmd 一样明确告诉我在什么环境下运行的命令。
+
+![](https://raw.githubusercontent.com/Tz-slayer/image-bed/master/markdown/20250824160332-1756051412749.png)
+
+## 2. 解决
+
+首先查看一下 oh-my-posh 的配置文件路径，
+
+```powershell
+$PROFILE
+```
+
+在 `--config` 参数后可以看到加载的主题文件，我这里加载的是 `amro.omp.json` 文件。
+
+```plaintext title="Microsoft.PowerShell_profile.ps1"
+oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/amro.omp.json" | Invoke-Expression
+```
+
+插入以下配置代码用于终端提示符显示当前 Python 虚拟环境。
+
+```json title="amro.omp.json" showLineNumbers ins={7-14}
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "blocks": [
+    {
+      "alignment": "left",
+      "segments": [
+        {
+          "foreground": "#dee93d",
+          "display_mode": "environment",
+          "fetch_virtual_env": true,
+          "home_enabled": true,
+          "template": "({{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}) ",
+          "type": "python"
+        },
+        {
+          "foreground": "#45F1C2",
+          "style": "plain",
+          "template": "\ueb99 {{ .UserName }} on",
+          "type": "session"
+        },
+        {
+          "foreground": "#0CA0D8",
+          "properties": {
+            "folder_separator_icon": "/",
+            "style": "full"
+          },
+          "style": "plain",
+          "template": " \uf07b {{ .Path }} ",
+          "type": "path"
+        },
+        {
+          "foreground": "#14A5AE",
+          "powerline_symbol": "\ue0b0",
+          "properties": {
+            "fetch_upstream_icon": true
+          },
+          "style": "plain",
+          "template": "{{ .UpstreamIcon }}{{ .HEAD }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} ",
+          "type": "git"
+        }
+      ],
+      "type": "prompt"
+    },
+    {
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "foreground": "#cd5e42",
+          "style": "plain",
+          "template": "\ue3bf ",
+          "type": "root"
+        },
+        {
+          "foreground": "#CD4277",
+          "style": "plain",
+          "template": "# ",
+          "type": "text"
+        }
+      ],
+      "type": "prompt"
+    }
+  ],
+  "version": 3
+}
+```
+
+## 3. 效果
+
+最后的效果如图所示，perfect~~
+
+![](https://raw.githubusercontent.com/Tz-slayer/image-bed/master/markdown/20250824160901-1756051741396.png)

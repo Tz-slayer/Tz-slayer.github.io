@@ -113,18 +113,25 @@ const bannerOffset =
 		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
 			// Load the theme from local storage
 			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
+			const setDocumentTheme = (mode) => {
+				document.documentElement.setAttribute('data-theme', mode);
+			};
 			switch (theme) {
 				case LIGHT_MODE:
 					document.documentElement.classList.remove('dark');
+					setDocumentTheme('light');
 					break
 				case DARK_MODE:
 					document.documentElement.classList.add('dark');
+					setDocumentTheme('dark');
 					break
 				case AUTO_MODE:
 					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 						document.documentElement.classList.add('dark');
+						setDocumentTheme('dark');
 					} else {
 						document.documentElement.classList.remove('dark');
+						setDocumentTheme('light');
 					}
 			}
 

@@ -1,0 +1,36 @@
+---
+title: Spotify Embeds 嵌入
+published: 2025-08-24 14:44:36
+description: 为网站添加 Spotify 音频
+tags: [Spotify]
+category: 疑难杂症
+draft: false
+---
+
+# Spotify Embeds 嵌入
+
+## 1. 前言
+
+嵌入功能帮助你将 Spotify 的互动内容分享到你控制的网站上。通过使用嵌入，你可以将播客、专辑或其他音频内容添加到你的网站上，供用户收听。[Spotify Embeds 官方教程](https://developer.spotify.com/documentation/embeds)。
+
+## 2. 教程
+
+创建嵌入有三种不同的方法：
+- 直接从 Spotify 客户端获取 HTML 代码并嵌入到 Web 应用中
+- 使用 iFrame API
+- 使用 oEmbed API
+
+### 2.1. 直接获取 HTML 代码
+
+找到需要分享的内容，`菜单->分享->嵌入歌单`，
+
+![](https://raw.githubusercontent.com/Tz-slayer/image-bed/master/markdown/20250824065936-1756018776246.png)
+
+使用提供的选项自定义嵌入的内容，然后点击复制，
+
+![](https://raw.githubusercontent.com/Tz-slayer/image-bed/master/markdown/20250824070132-1756018892362.png)
+
+将代码粘贴到希望显示的网页部分即可。
+
+<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/1uE6kntd4FYMMCxtAtraqC?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+

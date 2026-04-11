@@ -1,0 +1,78 @@
+---
+title: 仿米游社官网米游姬 Spine 动画
+published: 2025-08-22
+tags: [Markdown, Blogging]
+category: 折腾
+draft: false
+---
+
+> Cover image source: [Source](https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/208fc754-890d-4adb-9753-2c963332675d/width=2048/01651-1456859105-(colour_1.5),girl,_Blue,yellow,green,cyan,purple,red,pink,_best,8k,UHD,masterpiece,male%20focus,%201boy,gloves,%20ponytail,%20long%20hair,.jpeg)
+
+# 仿米游社官网米游姬 Spine 动画
+
+## 1. 前言
+
+本文以[米游社官网](https://www.miyoushe.com/)的米游姬 Spine 动画为例，学习一下大厂如何实现前端渲染 Spine 动画的。
+
+## 2. 逆向分析
+- Spine 动画工作机理
+
+  1. 资源准备
+  使用 Spine 编辑器将角色的各个部件（如头、手、身体等）绘制成单独的图片，并导出为纹理图集（Texture Atlas）和骨骼动画数据（通常为 JSON 或二进制格式）。
+
+  1. 资源加载
+  前端通过网络请求加载动画数据文件（如 .json 或 .skel）和对应的图集图片（.png）及图集描述文件（.atlas）。
+
+  1. 骨骼驱动
+  Spine 动画采用骨骼动画系统。每个部件图片（Region）被绑定到骨骼上，动画时通过控制骨骼的旋转、缩放、平移等变换，实现角色的运动和变形。
+
+  1. 动画播放
+  前端渲染库（如 spine-webgl、spine-canvas 或 spine-ts）解析动画数据，根据当前帧的骨骼变换，实时计算每个部件的位置和形变，并将对应的图片片段绘制到画布上。
+
+  1. 渲染输出
+  所有部件按骨骼层级和顺序组合，最终在网页上呈现出流畅的角色动画效果。
+
+
+总接下来，整个 Spine 动画的播放过程肯定是`资源加载->前端渲染`。
+
+- 资源加载
+
+请出我们万能的 F12 工具，分析网络请求，主要关注图片资源，可以看到这些角色被拆分成一块一块的图片应该就是我们需要找到的 Texture Atlas 资源。
+
+![](https://raw.githubusercontent.com/Tz-slayer/image-bed/master/markdown/20250822141025-1755871825498.png)
+
+除了 Texture Atlas 资源外，还需要一个记录动画数据文件的 json 文件，这里以主要的米游姬动画为例，给出[逆向分析出的 json 文件](https://github.com/Tz-slayer/miyoushe-spine/blob/main/assets/HanaCG2hana.json)，同样也给出[对应的 Texture Atlas 文件](https://github.com/Tz-slayer/miyoushe-spine/blob/main/assets/HanaCG2hana.png)和[图集描述文件](https://github.com/Tz-slayer/miyoushe-spine/blob/main/assets/HanaCG2hana.atlas)。
+
+- 前端渲染
+
+虽然前端代码是经过 webpack 打包混淆过的代码，但是稍微分析一点混淆过的代码还是能确定米哈游使用的技术方案的，使用的可能是 [spine-three.js](https://github.com/EsotericSoftware/spine-runtimes/tree/4.2/spine-ts/spine-threejs)，不过如果直接使用这个库会导致部分动画没有加载，因为除了库里面自带的 spine 动画的渲染，米哈游还修改了代码进行了拓展动画的渲染实现，拓展的动画字段在 json 文件中的 extra 字段可以看到，
+```json title="HanaCG2hana.json" startLineNumber=40098
+    "extra": {
+        "highlight_l_eye2": {
+            "rootBoneName": "highlight_l_eye2",
+            "animation": {
+                "default": {
+                    "name": "default",
+                    "mode": 1,
+                    "rotateCenter": 0,
+                    "rotateTime": 3,
+                    "rotateRange": 3,
+                    "rotateOffset": 0,
+                    "childOffset": 0.25,
+                    "spring": 0,
+                    "affectByLevel": 0.1,
+                    "springLevel": 0
+                }
+            }
+        },
+    // 省略...
+```
+这里也是稍微逆向了一下官网的源代码将额外实现的动画实现了，修改后的 spine-three.js 代码可以查看[这里](https://github.com/Tz-slayer/miyoushe-spine/blob/main/js/spine-three.js)。
+
+## 3. 最终效果
+
+<div style="position:relative; width:100%; padding-top:56.25%;">
+  <iframe src="https://tz-slayer.github.io/miyoushe-spine/index.html"
+    style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>
+</div>
+

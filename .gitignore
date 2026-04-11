@@ -29,3 +29,6 @@ yarn.lock
 # ide
 .idea
 *.iml
+
+# 不希望上传的博客
+20250908-1.md
